@@ -3,8 +3,14 @@ FROM 0x01be/openfpga:build as build
 
 FROM 0x01be/xpra
 
-COPY --from=build /opt/openfpga /opt/openfpga
-COPY --from=iverilog /opt/openfpga /opt/openfpga
+RUN apk add --no-cache --virtual openfpga-runtime-dependencies \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    libtbb-dev
+
+COPY --from=build /opt/openfpga/ /opt/openfpga/
+COPY --from=iverilog /opt/iverilog/ /opt/iverilog/
 
 ENV PATH=${PATH}:/opt/iverilog/bin/:/opt/openfpga/bin/
 
